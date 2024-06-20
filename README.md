@@ -22,7 +22,7 @@ pipx install git+https://github.com/tomasvotava/target-airtable.git
 Add the target to your Meltano project as a custom target:
 
 ```bash
-meltano add target target-airtable --from-ref https://raw.githubusercontent.com/tomasvotava/target-airtable/master/target-airtable.yml
+meltano add loader target-airtable --from-ref https://raw.githubusercontent.com/tomasvotava/target-airtable/master/target-airtable.yml
 ```
 
 ## Configuration

@@ -1,0 +1,83 @@
+version: 1
+default_environment: dev
+send_anonymous_usage_stats: true
+project_id: target-airtable
+environments:
+  - name: dev
+plugins:
+  extractors:
+    - name: tap-faker
+      variant: airbyte
+      pip_url: git+https://github.com/MeltanoLabs/tap-airbyte-wrapper.git
+      config:
+        airbyte_config:
+          count: 100
+        stream_maps:
+          products:
+            Make: make
+            Model: model
+            Year: int(year)
+            Price: float(price)
+            Created at: created_at
+            Updated at: updated_at
+            make: __NULL__
+            model: __NULL__
+            year: __NULL__
+            price: __NULL__
+            created_at: __NULL__
+            updated_at: __NULL__
+          users:
+            created_at: __NULL__
+            updated_at: __NULL__
+            name: __NULL__
+            title: __NULL__
+            age: __NULL__
+            email: __NULL__
+            telephone: __NULL__
+            gender: __NULL__
+            language: __NULL__
+            academic_degree: __NULL__
+            nationality: __NULL__
+            occupation: __NULL__
+            height: __NULL__
+            blood_type: __NULL__
+            weight: __NULL__
+            address: __NULL__
+            Created at: created_at
+            Updated at: updated_at
+            Name: name
+            Title: title
+            Age: int(age)
+            Email: email
+            Phone: telephone
+            Gender: gender
+            Language: language
+            Academic degree: academic_degree
+            Nationality: nationality
+            Occupation: occupation
+            Height: float(height)
+            Blood type: blood_type
+            Weight: float(weight)
+      select:
+        - products.*
+        - users.*
+  loaders:
+    - name: target-airtable
+      namespace: target_airtable
+      pip_url: -e .
+      capabilities:
+        - about
+        - batch
+        - stream-maps
+      settings:
+        - name: token
+          kind: string
+          sensitive: true
+        - name: table_mapping
+          kind: object
+        - name: table_primary_fields
+          kind: object
+        - name: base_id
+          kind: string
+        - name: destructive
+          kind: boolean
