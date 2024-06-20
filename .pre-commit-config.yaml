@@ -1,0 +1,40 @@
+repos:
+  - hooks:
+      - id: trailing-whitespace
+      - id: check-toml
+      - id: fix-byte-order-marker
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: detect-private-key
+      - id: forbid-submodules
+    repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+  - hooks:
+      - entry: poetry run mypy target_airtable
+        id: mypy
+        language: system
+        name: mypy
+        pass_filenames: false
+    repo: local
+  - hooks:
+      - id: detect-secrets
+    repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+  - hooks:
+      - entry: poetry run ruff check --fix target_airtable
+        id: ruff
+        language: system
+        name: ruff target_airtable
+        pass_filenames: false
+    repo: local
+  - hooks:
+      - id: commitizen
+      - id: commitizen-branch
+        args: ["--rev-range", "master..HEAD"]
+        stages:
+          - push
+    repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.26.0
