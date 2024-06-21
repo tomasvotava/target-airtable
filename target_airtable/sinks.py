@@ -2,9 +2,10 @@
 
 import datetime
 import logging
+from decimal import Decimal
 from typing import Any, Optional
 
-from singer_sdk import PluginBase
+from singer_sdk import Target
 from singer_sdk.sinks import BatchSink
 
 from target_airtable.airtable import AirtableClient
@@ -18,6 +19,8 @@ def _preprocess_record(record: dict[str, Any]) -> dict[str, Any]:
             record[key] = _preprocess_record(value)
         elif isinstance(value, datetime.datetime):
             record[key] = value.isoformat()
+        elif isinstance(value, Decimal):
+            record[key] = float(value)
     return record
 
 
@@ -25,7 +28,7 @@ class AirtableSink(BatchSink):
     """Airtable target sink class."""
 
     def __init__(
-        self, target: PluginBase, stream_name: str, schema: dict[str, Any], key_properties: Optional[list[str]]
+        self, target: Target, stream_name: str, schema: dict[str, Any], key_properties: Optional[list[str]]
     ) -> None:
         logger.warning(schema)
         super().__init__(target, stream_name, schema, key_properties)

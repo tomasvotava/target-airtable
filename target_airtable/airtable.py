@@ -50,7 +50,7 @@ class AirtableClient:
         self.primary_keys = primary_keys or []
         self.endpoint = urljoin(self.api_url, f"{self.base_id}/{self.table_id}")
 
-    @backoff.on_exception(backoff.constant, httpx.HTTPError, max_tries=5, max_time=30)  # type: ignore
+    @backoff.on_exception(backoff.constant, httpx.HTTPError, max_tries=5, max_time=30)
     def upsert_batch(self, batch: list[dict[str, Any]], destructive: bool = False) -> None:
         if len(batch) > AIRTABLE_MAX_BATCH_SIZE:
             logger.info("Splitting batch of %d", len(batch))
