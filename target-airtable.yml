@@ -1,0 +1,30 @@
+capabilities:
+  - about
+  - batch
+  - stream-maps
+description: Upsert tables to Airtable.
+domain_url: https://airtable.com/developers/web/api/introduction
+keywords:
+  - api
+  - meltano_sdk
+label: Airtable
+logo_url: /airtable.png
+maintenance_status: active
+name: target-airtable
+namespace: target_airtable
+pip_url: git+https://github.com/tomasvotava/target-airtable.git
+quality: silver
+repo: https://github.com/tomasvotava/target-airtable
+settings:
+  - name: token
+    kind: string
+    sensitive: true
+  - name: table_mapping
+    kind: object
+  - name: table_primary_fields
+    kind: object
+  - name: base_id
+    kind: string
+  - name: destructive
+    kind: boolean
+variant: tomasvotava
