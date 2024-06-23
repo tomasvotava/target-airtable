@@ -22,6 +22,7 @@ ruff = "^0.4.10"
 mypy = "^1.10.0"
 commitizen = "^3.27.0"
 
+python-dotenv = "^1.0.1"
 [build-system]
 requires = ["poetry-core>=1.0.8"]
 build-backend = "poetry.core.masonry.api"
@@ -63,7 +64,7 @@ select = [
 known-first-party = ["target_airtable"]
 
 [tool.ruff.lint.per-file-ignores]
-"target_airtable/tests/**" = [
+"tests/**" = [
     "S101",   # allow asserts in tests
     "RUF018", # allow asserts with walrus in tests
     "D",      # ignore missing documentation in tests
