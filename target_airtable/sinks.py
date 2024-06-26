@@ -37,16 +37,19 @@ class AirtableSink(BatchSink):
     def max_size(self) -> int:
         return 10  # this is hard-coded due to Airtable's API limitations
 
-    def _preprocess_record(self, record: dict[str, Any]) -> dict[str, Any]:
+    def _preprocess_record(self, record: dict[str, Any], *, remap: bool = True) -> dict[str, Any]:
         fields = list(record.keys())
         cleaned: dict[str, Any] = {}
         for key in fields:
-            mapped_key = self.fields_mapping.get(key, key)
-            if mapped_key == "__NULL__":
-                continue
+            if remap:
+                mapped_key = self.fields_mapping.get(key, key)
+                if mapped_key == "__NULL__":
+                    continue
+            else:
+                mapped_key = key
             value = record[key]
             if isinstance(value, dict):
-                cleaned[mapped_key] = self._preprocess_record(value)
+                cleaned[mapped_key] = self._preprocess_record(value, remap=False)  # do not remap nested fields
             elif isinstance(value, datetime.datetime):
                 cleaned[mapped_key] = value.isoformat()
             elif isinstance(value, Decimal):
