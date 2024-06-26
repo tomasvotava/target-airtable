@@ -13,17 +13,6 @@ from target_airtable.airtable import AirtableClient
 logger = logging.getLogger(__name__)
 
 
-def _preprocess_record(record: dict[str, Any]) -> dict[str, Any]:
-    for key, value in record.items():
-        if isinstance(value, dict):
-            record[key] = _preprocess_record(value)
-        elif isinstance(value, datetime.datetime):
-            record[key] = value.isoformat()
-        elif isinstance(value, Decimal):
-            record[key] = float(value)
-    return record
-
-
 class AirtableSink(BatchSink):
     """Airtable target sink class."""
 
@@ -42,10 +31,29 @@ class AirtableSink(BatchSink):
         self.client = AirtableClient(
             self.config["token"], self.config["base_id"], table_mapping[stream_name], primary_fields
         )
+        self.fields_mapping: dict[str, str] = self.config.get("table_fields_mapping", {}).get(stream_name, {})
 
     @property
     def max_size(self) -> int:
         return 10  # this is hard-coded due to Airtable's API limitations
+
+    def _preprocess_record(self, record: dict[str, Any]) -> dict[str, Any]:
+        fields = list(record.keys())
+        cleaned: dict[str, Any] = {}
+        for key in fields:
+            mapped_key = self.fields_mapping.get(key, key)
+            if mapped_key == "__NULL__":
+                continue
+            value = record[key]
+            if isinstance(value, dict):
+                cleaned[mapped_key] = self._preprocess_record(value)
+            elif isinstance(value, datetime.datetime):
+                cleaned[mapped_key] = value.isoformat()
+            elif isinstance(value, Decimal):
+                cleaned[mapped_key] = float(value)
+            else:
+                cleaned[mapped_key] = value
+        return cleaned
 
     def start_batch(self, context: dict[str, Any]) -> None:
         """Start a batch."""
@@ -54,7 +62,7 @@ class AirtableSink(BatchSink):
 
     def process_record(self, record: dict[str, Any], context: dict[str, Any]) -> None:
         """Process the record."""
-        self.current_batch.append(_preprocess_record(record))
+        self.current_batch.append(self._preprocess_record(record))
 
     def process_batch(self, context: dict[str, Any]) -> None:
         """Write out any prepped records and return once fully written."""

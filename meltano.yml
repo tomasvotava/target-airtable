@@ -81,3 +81,5 @@ plugins:
           kind: string
         - name: destructive
           kind: boolean
+        - name: table_fields_mapping
+          kind: object

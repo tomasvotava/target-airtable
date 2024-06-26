@@ -40,5 +40,13 @@ class TargetAirtable(Target):
             ),
             default=False,
         ),
+        th.Property(
+            "table_fields_mapping",
+            th.ObjectType(additional_properties=th.ObjectType(additional_properties=th.StringType)),
+            description=(
+                "An optional mapping of stream_name => {field => renamed_field} to allow renaming "
+                "field from streams that do not support stream mapping."
+            ),
+        ),
     ).to_dict()
     default_sink_class = AirtableSink
