@@ -29,14 +29,16 @@ meltano add loader target-airtable --from-ref https://raw.githubusercontent.com/
 
 ### Accepted Config Options
 
-| Property | Required | Description |
+|Property | Required |Description |
 |:---|:---|:---|
-| `token` | Yes | Airtable API token |
-| `base_id` | Yes | Airtable base ID |
-| `table_mapping` | Yes | Mapping of stream to Airtable table id |
-| `table_primary_fields` | No | Mapping of stream to array of Airtable fields that should be used as primary key. If not given, `id` must be present in the records |
-| `destructive` | No | If set to `true`, the target will delete all fields that are not present in the stream but are present in Airtable. Default is `false`. |
-| `table_fields_mapping` | No | Mapping of stream to Airtable fields. If not given, all fields will be used. You may use special value `__NULL__` to omit a field completely. |
+|`token` | Yes | The token to authenticate against Airtable API |
+|`base_id` | Yes | Airtable base ID |
+|`streams` | No | Configuration for each of the input streams |
+|`streams.<stream_name>.destructive` | No | If `true`, fields missing in the source stream that exist in the destination will be deleted from Airtable. Default is `false`. |
+|`streams.<stream_name>.table_id` | No | The Airtable table id this stream should be poured into. By default, it is expected that the Airtable table name matches the stream name. |
+|`streams.<stream_name>.upsert` | No | If `true`, data from the stream will be upserted into the Airtable table. Default is `false`. |
+|`streams.<stream_name>.match_fields` | No | If upserting, list the fields that should act as a primary key for the Airtable table. Fields must exist on all records. |
+|`streams.<stream_name>.fields_mapping` | No | A primitive fields mapping to be used with taps that do not support stream maps. Use `field: __NULL__` to exclude and `old_field: new_field` to rename field. |
 
 ## Stream maps
 
@@ -80,11 +82,12 @@ target:
   name: target-airtable
   config:
     ...
-    table_fields_mapping:
+    streams:
       products:
-        full_name: Full Name  # `full_name` will not be present in the Airtable, only `Full Name`
-        i_dont_want_this_field: __NULL__
-        # All fields not present here will be used as is
+        fields_mapping:
+          full_name: Full Name  # `full_name` will not be present in the Airtable, only `Full Name`
+          i_dont_want_this_field: __NULL__
+          # All fields not present here will be used as is
 ...
 ```
 
