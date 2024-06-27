@@ -22,16 +22,19 @@ class AirtableSink(BatchSink):
         logger.warning(schema)
         super().__init__(target, stream_name, schema, key_properties)
         self.current_batch: list[dict[str, Any]] = []
-        table_mapping = self.config["table_mapping"]
-        if stream_name not in table_mapping:
-            raise ValueError(
-                f"Stream name {stream_name!r} is not found in table mapping. Please update the configuration."
-            )
-        primary_fields = (self.config.get("table_primary_fields") or {}).get(stream_name)
-        self.client = AirtableClient(
-            self.config["token"], self.config["base_id"], table_mapping[stream_name], primary_fields
-        )
-        self.fields_mapping: dict[str, str] = self.config.get("table_fields_mapping", {}).get(stream_name, {})
+        stream_settings: dict[str, Any] = self.config.get("streams", {}).get(stream_name, {})
+        self.destructive = stream_settings.get("destructive", False)
+        self.upsert = stream_settings.get("upsert", False)
+        table_id = stream_settings.get("table_id")
+        if not table_id:
+            logger.warning(f"Stream {stream_name!r} has no table id set. Its name will be used.")
+            table_id = stream_name
+        match_fields = stream_settings.get("match_fields")
+        if not self.upsert and match_fields:
+            logger.warning(f"Stream {stream_name!r} has upsert = false, match fields will be ignored.")
+            match_fields = None
+        self.client = AirtableClient(self.config["token"], self.config["base_id"], table_id, match_fields)
+        self.fields_mapping: dict[str, str] = stream_settings.get("fields_mapping", {})
 
     @property
     def max_size(self) -> int:
@@ -41,12 +44,11 @@ class AirtableSink(BatchSink):
         fields = list(record.keys())
         cleaned: dict[str, Any] = {}
         for key in fields:
+            mapped_key = key
             if remap:
                 mapped_key = self.fields_mapping.get(key, key)
                 if mapped_key == "__NULL__":
                     continue
-            else:
-                mapped_key = key
             value = record[key]
             if isinstance(value, dict):
                 cleaned[mapped_key] = self._preprocess_record(value, remap=False)  # do not remap nested fields
@@ -69,4 +71,12 @@ class AirtableSink(BatchSink):
 
     def process_batch(self, context: dict[str, Any]) -> None:
         """Write out any prepped records and return once fully written."""
-        self.client.upsert_batch(self.current_batch, self.config["destructive"])
+        if self.upsert:
+            self.client.upsert_batch(self.current_batch, self.destructive)
+        else:
+            if self.destructive:
+                logger.warning(
+                    f"Cannot perform destructive insert for stream {self.stream_name!r}, "
+                    "only upserts may be destructive."
+                )
+            self.client.insert_batch(self.current_batch)
