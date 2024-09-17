@@ -57,14 +57,12 @@ class AirtableClient:
             for chunk in chunkify(batch, AIRTABLE_MAX_BATCH_SIZE):
                 self.upsert_batch(chunk, destructive)
             return
-        upsert_config = (
-            {"fieldsToMergeOn": self.primary_keys} if self.primary_keys else {"fieldsToMergeOn": ["Make", "Model"]}
-        )
+        upsert_config = {"performUpsert": ({"fieldsToMergeOn": self.primary_keys} if self.primary_keys else {})}
         method = self.session.put if destructive else self.session.patch
         response = method(
             self.endpoint,
             json={
-                "performUpsert": upsert_config,
+                **upsert_config,
                 "records": _format_batch(batch, has_id=not self.primary_keys),
                 "typecast": True,
             },
@@ -76,5 +74,26 @@ class AirtableClient:
                 logger.error(
                     "Faulty batch: %s", json.dumps(_format_batch(batch, has_id=not self.primary_keys), default=str)
                 )
+                raise NonRetryableError(response.text) from error
+            raise
+
+    @backoff.on_exception(backoff.constant, httpx.HTTPError, max_tries=5, max_time=30)
+    def insert_batch(self, batch: list[dict[str, Any]]) -> None:
+        if len(batch) > AIRTABLE_MAX_BATCH_SIZE:
+            logger.info("Splitting batch of %d", len(batch))
+            for chunk in chunkify(batch, AIRTABLE_MAX_BATCH_SIZE):
+                self.insert_batch(chunk)
+            return
+        response = self.session.post(
+            self.endpoint,
+            json={
+                "records": [{"fields": record} for record in batch],
+            },
+        )
+        try:
+            response.raise_for_status()
+        except httpx.HTTPStatusError as error:
+            if response.status_code < 500:
+                logger.error("Faulty batch: %s", json.dumps(batch, default=str))
                 raise NonRetryableError(response.text) from error
             raise
