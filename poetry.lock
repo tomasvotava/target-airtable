@@ -114,6 +114,7 @@ description = "Backport of Python 3.11's datetime.fromisoformat"
 optional = false
 python-versions = ">3"
 groups = ["main"]
+markers = "python_version < \"3.11\""
 files = [
     {file = "backports_datetime_fromisoformat-2.0.3-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:5f681f638f10588fa3c101ee9ae2b63d3734713202ddfcfb6ec6cea0778a29d4"},
     {file = "backports_datetime_fromisoformat-2.0.3-cp310-cp310-macosx_11_0_universal2.whl", hash = "sha256:cd681460e9142f1249408e5aee6d178c6d89b49e06d44913c8fdfb6defda8d1c"},
@@ -519,6 +520,7 @@ description = "Backport of PEP 654 (exception groups)"
 optional = false
 python-versions = ">=3.7"
 groups = ["main", "dev"]
+markers = "python_version < \"3.11\""
 files = [
     {file = "exceptiongroup-1.2.2-py3-none-any.whl", hash = "sha256:3111b9d131c238bec2f8f516e123e14ba243563fb135d3fe885990585aa7795b"},
     {file = "exceptiongroup-1.2.2.tar.gz", hash = "sha256:47c2edf7c6738fafb49fd34290706d1a1a2f4d1c6df275526b62cbb4aa5393cc"},
@@ -897,7 +899,7 @@ files = [
     {file = "importlib_metadata-8.7.0-py3-none-any.whl", hash = "sha256:e5dd1551894c77868a30651cef00984d50e1002d06942a7101d34870c5f02afd"},
     {file = "importlib_metadata-8.7.0.tar.gz", hash = "sha256:d13b81ad223b890aa16c5471f2ac3056cf76c5f10f82d6f9292f0b415f389000"},
 ]
-markers = {main = "python_version >= \"3.9\"", dev = "python_version == \"3.9\""}
+markers = {main = "python_version >= \"3.9\" and python_version < \"3.12\"", dev = "python_version == \"3.9\""}
 
 [package.dependencies]
 zipp = ">=3.20"
@@ -2269,6 +2271,7 @@ description = "A lil' TOML parser"
 optional = false
 python-versions = ">=3.8"
 groups = ["dev"]
+markers = "python_full_version <= \"3.11.0a6\""
 files = [
     {file = "tomli-2.2.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:678e4fa69e4575eb77d103de3df8a895e1591b48e740211bd1067378c69e8249"},
     {file = "tomli-2.2.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:023aa114dd824ade0100497eb2318602af309e5a55595f76b626d6d9f3b7b0a6"},
@@ -2410,7 +2413,7 @@ files = [
     {file = "zipp-3.21.0-py3-none-any.whl", hash = "sha256:ac1bbe05fd2991f160ebce24ffbac5f6d11d83dc90891255885223d42b3cd931"},
     {file = "zipp-3.21.0.tar.gz", hash = "sha256:2c9958f6430a2040341a52eb608ed6dd93ef4392e02ffe219417c1b28b5dd1f4"},
 ]
-markers = {main = "python_version >= \"3.9\"", dev = "python_version == \"3.9\""}
+markers = {main = "python_version >= \"3.9\" and python_version < \"3.12\"", dev = "python_version == \"3.9\""}
 
 [package.extras]
 check = ["pytest-checkdocs (>=2.4)", "pytest-ruff (>=0.2.1) ; sys_platform != \"cygwin\""]
@@ -2422,5 +2425,5 @@ type = ["pytest-mypy"]
 
 [metadata]
 lock-version = "2.1"
-python-versions = "<3.11,>=3.8"
-content-hash = "d5456ca3e8b6206459d211f1634008670a05353937e4a9afa01d1ecc51003d7b"
+python-versions = "<3.14,>=3.8"
+content-hash = "291f94aa456d3f6c32edee7b514d1bd35313035bb2da15544e72c80b7b1bc7e1"

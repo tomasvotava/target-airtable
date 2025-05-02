@@ -9,7 +9,7 @@ include = ["py.typed"]
 repository = "https://github.com/tomasvotava/target-airtable"
 
 [tool.poetry.dependencies]
-python = "<3.11,>=3.8"
+python = "<3.14,>=3.8"
 singer-sdk = "^0.42.1"
 httpx = "^0.28.1"
 
