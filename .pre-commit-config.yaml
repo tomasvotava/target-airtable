@@ -35,6 +35,6 @@ repos:
       - id: commitizen-branch
         args: ["--rev-range", "master..HEAD"]
         stages:
-          - push
+          - pre-push
     repo: https://github.com/commitizen-tools/commitizen
     rev: v3.26.0
