@@ -11,9 +11,7 @@ repository = "https://github.com/tomasvotava/target-airtable"
 [tool.poetry.dependencies]
 python = "<3.11,>=3.8"
 singer-sdk = "^0.42.1"
-
 httpx = "^0.28.1"
-[tool.poetry.dev-dependencies]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
