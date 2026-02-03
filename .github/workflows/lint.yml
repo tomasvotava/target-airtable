@@ -21,7 +21,8 @@ jobs:
           python3 -m pipx ensurepath
       - name: Install Poetry
         run: |
-          pipx install poetry==1.8.3
+          pipx uninstall poetry || true
+          pipx install poetry==2.3.2 --pip-args="--no-cache-dir"
           poetry config virtualenvs.create false
       - name: Install pre-commit
         run: pipx install pre-commit
@@ -49,7 +50,8 @@ jobs:
           python3 -m pipx ensurepath
       - name: Install poetry
         run: |
-          pipx install poetry==1.8.3
+          pipx uninstall poetry || true
+          pipx install poetry==2.3.2 --pip-args="--no-cache-dir"
           poetry config virtualenvs.create false
       - name: Install dependencies
         run: poetry install
